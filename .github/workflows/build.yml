@@ -23,7 +23,7 @@ jobs:
 
             - name: Build Intel executable
               run: |
-                  arch -x86_64 python -m PyInstaller --onefile --windowed app.py
+                  arch -x86_64 python -m PyInstaller app.spec
               env:
                   ARCHFLAGS: "-arch x86_64"
 
@@ -53,7 +53,7 @@ jobs:
 
             - name: Build ARM executable
               run: |
-                  arch -arm64 python -m PyInstaller --onefile --windowed app.py
+                  arch -arm64 python -m PyInstaller app.spec
               env:
                   ARCHFLAGS: "-arch arm64"
 
@@ -79,7 +79,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Ubuntu executable
-              run: pyinstaller --onefile --windowed app.py
+              run: pyinstaller --onefile --windowed app.spec
 
             - name: Upload Ubuntu artifact
               uses: actions/upload-artifact@v4
@@ -103,7 +103,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Windows executable
-              run: pyinstaller --onefile --windowed app.py
+              run: pyinstaller --onefile --windowed app.spec
 
             - name: Upload Windows artifact
               uses: actions/upload-artifact@v4
