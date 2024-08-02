@@ -79,7 +79,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Ubuntu executable
-              run: pyinstaller --onefile --windowed app.spec
+              run: pyinstaller app.spec
 
             - name: Upload Ubuntu artifact
               uses: actions/upload-artifact@v4
@@ -103,7 +103,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Windows executable
-              run: pyinstaller --onefile --windowed app.spec
+              run: pyinstaller app.spec
 
             - name: Upload Windows artifact
               uses: actions/upload-artifact@v4
