@@ -3,13 +3,13 @@ name: Build and Package
 on: [push, pull_request]
 
 jobs:
-    build-macos:
+    build-macos-x86_64:
         runs-on: macos-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
 
             - name: Set up Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v4
               with:
                   python-version: "3.x"
 
@@ -18,11 +18,38 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install pyinstaller PyQt6
 
+            - name: Clean previous builds
+              run: rm -rf dist build
+
             - name: Build Intel executable
               run: |
                   arch -x86_64 python -m PyInstaller --onefile --windowed app.py
               env:
                   ARCHFLAGS: "-arch x86_64"
+
+            - name: Upload macOS x86_64 artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: app-macos-x86_64
+                  path: dist/app
+
+    build-macos-arm64:
+        runs-on: macos-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.x"
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install pyinstaller PyQt6
+
+            - name: Clean previous builds
+              run: rm -rf dist build
 
             - name: Build ARM executable
               run: |
@@ -30,24 +57,19 @@ jobs:
               env:
                   ARCHFLAGS: "-arch arm64"
 
-            - name: Combine executables
-              run: |
-                  mkdir -p dist/universal
-                  lipo -create -output dist/universal/app dist/app dist/app_arm64
-
-            - name: Upload macOS artifact
-              uses: actions/upload-artifact@v2
+            - name: Upload macOS arm64 artifact
+              uses: actions/upload-artifact@v4
               with:
-                  name: app-macos
-                  path: dist/universal/app
+                  name: app-macos-arm64
+                  path: dist/app
 
     build-ubuntu:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
 
             - name: Set up Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v4
               with:
                   python-version: "3.x"
 
@@ -60,7 +82,7 @@ jobs:
               run: pyinstaller --onefile --windowed app.py
 
             - name: Upload Ubuntu artifact
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: app-ubuntu
                   path: dist/app
@@ -68,10 +90,10 @@ jobs:
     build-windows:
         runs-on: windows-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v4
 
             - name: Set up Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v4
               with:
                   python-version: "3.x"
 
@@ -84,7 +106,7 @@ jobs:
               run: pyinstaller --onefile --windowed app.py
 
             - name: Upload Windows artifact
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: app-windows
                   path: dist/app.exe
