@@ -3,6 +3,8 @@
 
 # Import the necessary module from PyInstaller
 from PyInstaller.utils.hooks import copy_metadata
+import os
+import platform
 
 # Collect all dependencies
 a = Analysis(
@@ -37,13 +39,38 @@ exe = EXE(
     console=False,  # This sets windowed mode
 )
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='app',
-)
+if platform.system() == "Darwin":
+    app = BUNDLE(
+        exe,
+        name='app.app',
+        icon=None,  # You can specify an icon file here
+        bundle_identifier=None,
+        info_plist={
+            'CFBundleName': 'OSDetectorApp',
+            'CFBundleDisplayName': 'OSDetectorApp',
+            'CFBundleVersion': '0.1.0',
+            'CFBundleShortVersionString': '0.1.0',
+            'LSUIElement': '1',  # Hide dock icon if necessary
+        },
+    )
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name='app',
+    )
+else:
+    coll = COLLECT(
+        exe,
+        a.binaries,
+        a.zipfiles,
+        a.datas,
+        strip=False,
+        upx=True,
+        upx_exclude=[],
+        name='app',
+    )
