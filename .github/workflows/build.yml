@@ -18,14 +18,28 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install pyinstaller PyQt6
 
-            - name: Build macOS executable
-              run: pyinstaller --onefile --windowed app.py
+            - name: Build Intel executable
+              run: |
+                  arch -x86_64 python -m PyInstaller --onefile --windowed app.py
+              env:
+                  ARCHFLAGS: "-arch x86_64"
+
+            - name: Build ARM executable
+              run: |
+                  arch -arm64 python -m PyInstaller --onefile --windowed app.py
+              env:
+                  ARCHFLAGS: "-arch arm64"
+
+            - name: Combine executables
+              run: |
+                  mkdir -p dist/universal
+                  lipo -create -output dist/universal/app dist/app dist/app_arm64
 
             - name: Upload macOS artifact
               uses: actions/upload-artifact@v2
               with:
                   name: app-macos
-                  path: dist/app
+                  path: dist/universal/app
 
     build-ubuntu:
         runs-on: ubuntu-latest
@@ -43,7 +57,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Ubuntu executable
-              run: pyinstaller --onefile app.py
+              run: pyinstaller --onefile --windowed app.py
 
             - name: Upload Ubuntu artifact
               uses: actions/upload-artifact@v2
@@ -67,7 +81,7 @@ jobs:
                   pip install pyinstaller PyQt6
 
             - name: Build Windows executable
-              run: pyinstaller --onefile app.py
+              run: pyinstaller --onefile --windowed app.py
 
             - name: Upload Windows artifact
               uses: actions/upload-artifact@v2
